@@ -52,7 +52,7 @@ app.post('/lead', async (req, res) => {
 
     // Send to Perfect Gym API
     const response = await axios.post(
-      `${process.env.PERFECT_GYM_BASE_URL}/Api/v2.2/odata/Crm2Leads`,
+      `${process.env.PERFECT_GYM_BASE_URL}/Crm2/Api/v2.2/odata/Leads`,
       leadData,
       {
         headers: {
