@@ -69,11 +69,12 @@ app.post('/lead', async (req, res) => {
 
     console.log('Perfect Gym response:', response.status);
 
-    // Return success
+    // Return success with redirect URL
     res.status(201).json({
       success: true,
       message: 'Lead created successfully',
-      leadId: response.data?.Id
+      leadId: response.data?.Id,
+      redirect: process.env.REDIRECT_URL || 'https://chasingbetter247.perfectgym.com.au/thank-you'
     });
 
   } catch (error) {
