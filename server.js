@@ -22,6 +22,9 @@ app.get('/', (req, res) => {
 // Lead submission endpoint
 app.post('/lead', async (req, res) => {
   try {
+    // Log incoming request
+    console.log('Received request body:', req.body);
+    
     // Extract form data from Webflow
     const { Name, Email, Phone } = req.body;
 
@@ -29,7 +32,8 @@ app.post('/lead', async (req, res) => {
     if (!Name || !Email) {
       return res.status(400).json({
         success: false,
-        error: 'Missing required fields: Name and Email are required'
+        error: 'Missing required fields: Name and Email are required',
+        received: { Name, Email, Phone }
       });
     }
 
