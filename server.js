@@ -26,10 +26,10 @@ app.post('/lead', async (req, res) => {
     const { Name, Email, Phone } = req.body;
 
     // Validate required fields
-    if (!Name || !Email || !Phone) {
+    if (!Name || !Email) {
       return res.status(400).json({
         success: false,
-        error: 'Missing required fields: Name, Email, and Phone are required'
+        error: 'Missing required fields: Name and Email are required'
       });
     }
 
@@ -43,7 +43,7 @@ app.post('/lead', async (req, res) => {
       FirstName: FirstName,
       LastName: LastName,
       Email: Email,
-      Phone: Phone,
+      // Phone: Phone,
       ClubId: parseInt(process.env.CLUB_ID) || 3,
       Source: process.env.SOURCE || 'Webflow Form'
     };
