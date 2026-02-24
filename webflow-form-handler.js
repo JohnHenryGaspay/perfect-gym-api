@@ -17,16 +17,20 @@ setTimeout(function() {
     });
   });
   
+
   // Get your form - try multiple selectors
   const form = document.querySelector('form[data-name="Contact Us Leads"]') || 
                document.querySelector('form[name="Contact Us Leads"]') ||
                document.querySelector('form');
-  
+
   if (!form) {
     console.error('❌ No form matched. Check the console output above for available forms.');
     return;
   }
-  
+
+  // Force the form action to the new serverless function endpoint
+  form.setAttribute('action', 'https://post-api-flax.vercel.app/api/lead');
+
   console.log('✅ Form found:', form);
 
   form.addEventListener('submit', async function(e) {
@@ -50,7 +54,7 @@ setTimeout(function() {
       submitButton.disabled = true;
 
       // Send to your API
-      const response = await fetch('https://perfect-gym-api.vercel.app/lead', {
+      const response = await fetch('https://post-api-flax.vercel.app/api/lead', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

@@ -1,39 +1,15 @@
-
-require('dotenv').config();
-const express = require('express');
-const cors = require('cors');
 const axios = require('axios');
 
-const app = express();
-const PORT = process.env.PORT || 3000;
+module.exports = async (req, res) => {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ success: false, error: 'Method Not Allowed' });
+  }
 
-// Middleware
-app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-// Health check endpoint
-app.get('/', (req, res) => {
-  res.json({
-    status: 'API is running',
-    endpoints: ['/lead']
-  });
-});
-
-// Lead submission endpoint (also available at /)
-const handleLeadSubmission = async (req, res) => {
   try {
-    // Log incoming request
-    console.log('Received request body:', req.body);
-
-    // Extract form data from Webflow
     const { Name, Email, Phone } = req.body;
-
-    // Set clubId as number and source as string
     const CLUB_ID = parseInt(process.env.CLUB_ID) || 3;
     const SOURCE = process.env.SOURCE || 'Webflow';
 
-    // Validate required fields
     if (!Name || !Email) {
       return res.status(400).json({
         success: false,
@@ -42,12 +18,10 @@ const handleLeadSubmission = async (req, res) => {
       });
     }
 
-    // Split name into FirstName and LastName
     const nameParts = Name.trim().split(' ');
     const FirstName = nameParts[0];
     const LastName = nameParts.slice(1).join(' ') || FirstName;
 
-    // Build Perfect Gym lead payload
     const leadData = {
       firstName: FirstName,
       lastName: LastName,
@@ -59,9 +33,6 @@ const handleLeadSubmission = async (req, res) => {
       leadData.phone = Phone;
     }
 
-    console.log('Sending lead to Perfect Gym:', leadData);
-
-    // Send to Perfect Gym API
     const response = await axios.post(
       process.env.PERFECT_GYM_BASE_URL
         ? `${process.env.PERFECT_GYM_BASE_URL}/Api/v2.2/Crm2/AddLead`
@@ -76,10 +47,6 @@ const handleLeadSubmission = async (req, res) => {
       }
     );
 
-    console.log('Perfect Gym response status:', response.status);
-    console.log('Perfect Gym response data:', response.data);
-
-    // Accept either Id or leadId from response
     const returnedLeadId = response.data?.Id ?? response.data?.leadId;
     if (!response.data || returnedLeadId == null) {
       return res.status(502).json({
@@ -89,7 +56,6 @@ const handleLeadSubmission = async (req, res) => {
       });
     }
 
-    // Return success with redirect URL
     res.status(201).json({
       success: true,
       message: 'Lead created successfully',
@@ -98,24 +64,11 @@ const handleLeadSubmission = async (req, res) => {
       leadResponse: response.data,
       redirect: process.env.REDIRECT_URL || 'https://www.chasingbetter247.com.au/thank-you-subscribe'
     });
-
   } catch (error) {
-    console.error('Error creating lead:', error.response?.data || error.message);
     res.status(error.response?.status || 500).json({
       success: false,
       error: error.response?.data?.error?.message || 'Failed to create lead',
       details: error.response?.data || error.message
     });
   }
-
 };
-
-app.post('/lead', handleLeadSubmission);
-app.post('/', handleLeadSubmission);
-
-// Start server
-app.listen(PORT, () => {
-  console.log(`✅ Server running on http://localhost:${PORT}`);
-  console.log(`✅ Ready to receive leads from Webflow`);
-  console.log(`✅ Forwarding to: ${process.env.PERFECT_GYM_BASE_URL}`);
-});
