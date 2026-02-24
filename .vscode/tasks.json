@@ -1,0 +1,12 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Test /lead endpoint with valid data",
+			"type": "shell",
+			"command": "curl -X POST http://localhost:3000/lead -H \"Content-Type: application/json\" -d \"{\\\"Name\\\":\\\"Test User\\\",\\\"Email\\\":\\\"testuser@example.com\\\",\\\"Phone\\\":\\\"1234567890\\\"}\"",
+			"problemMatcher": [],
+			"group": "test"
+		}
+	]
+}
