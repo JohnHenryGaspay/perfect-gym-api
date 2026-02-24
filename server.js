@@ -1,4 +1,5 @@
 require('dotenv').config();
+
 const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
@@ -23,13 +24,14 @@ app.get('/', (req, res) => {
 // Lead submission endpoint
 app.post('/lead', async (req, res) => {
   try {
+<<<<<<< HEAD
     // Log incoming request
     console.log('Received request body:', req.body);
 
     // Extract form data from Webflow
     const { Name, Email, Phone, message } = req.body;
 
-    // Set clubId as number and source as string, but also provide a numeric sourceId for API
+    // Set clubId as number and source as string
     const CLUB_ID = 3;
     const SOURCE = 'Webflow';
 
@@ -47,6 +49,7 @@ app.post('/lead', async (req, res) => {
     const FirstName = nameParts[0];
     const LastName = nameParts.slice(1).join(' ') || FirstName; // Use FirstName if no LastName
 
+<<<<<<< HEAD
     // Validate required fields for API
     if (!FirstName || !LastName || !Email) {
       return res.status(400).json({
@@ -83,12 +86,34 @@ app.post('/lead', async (req, res) => {
       {
         headers: {
           'X-Client-Id': process.env.CLIENT_ID,
+=======
+    // Build Perfect Gym lead payload
+    const leadData = {
+      FirstName: FirstName,
+      LastName: LastName,
+      Email: Email,
+      Phone: Phone,
+      ClubId: parseInt(process.env.CLUB_ID) || 3,
+      Source: process.env.SOURCE || 'Webflow Form'
+    };
+
+    console.log('Sending lead to Perfect Gym:', leadData);
+
+    // Send to Perfect Gym API
+    const response = await axios.post(
+      `${process.env.PERFECT_GYM_BASE_URL}/Crm2/Api/v2.2/odata/Leads`,
+      leadData,
+      {
+        headers: {
+          'X-Client-id': process.env.CLIENT_ID,
+>>>>>>> 905b03774cee50dc4cafae69223b86a2bc3a8589
           'X-Client-Secret': process.env.CLIENT_SECRET,
           'Content-Type': 'application/json'
         }
       }
     );
 
+<<<<<<< HEAD
     console.log('Perfect Gym response status:', response.status);
     console.log('Perfect Gym response data:', response.data);
 
@@ -120,14 +145,27 @@ app.post('/lead', async (req, res) => {
       leadPayload: leadData,
       leadResponse: response.data,
       redirect: process.env.REDIRECT_URL || 'https://www.chasingbetter247.com.au/thank-you-subscribe'
+=======
+    console.log('Perfect Gym response:', response.status);
+
+    // Return success
+    res.status(201).json({
+      success: true,
+      message: 'Lead created successfully',
+      leadId: response.data?.Id
+>>>>>>> 905b03774cee50dc4cafae69223b86a2bc3a8589
     });
 
   } catch (error) {
     console.error('Error creating lead:', error.response?.data || error.message);
+<<<<<<< HEAD
     if (error.response) {
       console.error('Perfect Gym error status:', error.response.status);
       console.error('Perfect Gym error headers:', error.response.headers);
     }
+=======
+    
+>>>>>>> 905b03774cee50dc4cafae69223b86a2bc3a8589
     // Return error details
     res.status(error.response?.status || 500).json({
       success: false,
